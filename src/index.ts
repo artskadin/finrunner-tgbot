@@ -1,6 +1,5 @@
 import Fastify from 'fastify'
 import fastifyEnv from '@fastify/env'
-import { connectKafka } from './kafka'
 import { schema, Envs } from './envSettings'
 import { startHandler } from './handlers/startHandler'
 import { kafkaServie } from './services/kafka/kafka-service'
@@ -25,11 +24,9 @@ app.addHook('onListen', async () => {
     kafkaEventHandlerRegistry.registerHandler(new UserCreatedFromTgBotHandler())
     kafkaEventHandlerRegistry.registerHandler(new UserUpdatedFromTgBotHandler())
 
-    connectKafka()
     botService.start()
 
     await kafkaServie.connect()
-
     kafkaServie.consume(KafkaTopics.UserEvents)
   } catch (err) {
     app.log.error(err)
