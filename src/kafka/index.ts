@@ -2,7 +2,7 @@ import { Kafka } from 'kafkajs'
 
 const kafka = new Kafka({
   clientId: 'tgbot-service',
-  brokers: ['localhost:9092'] // Замените на IP вашего сервера Kafka
+  brokers: ['localhost:29092']
 })
 
 const producer = kafka.producer()
