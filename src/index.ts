@@ -7,6 +7,7 @@ import { KafkaTopics } from './services/kafka/kafka-topics'
 import { getBotService } from './services/bot-service'
 import { kafkaEventHandlerRegistry } from './services/kafka/event-handler-registry'
 import {
+  SendOtpToUserHandler,
   UserCreatedFromTgBotHandler,
   UserUpdatedFromTgBotHandler
 } from './services/kafka/events-handlers'
@@ -19,24 +20,27 @@ const options = {
 const app = Fastify({
   logger: true
 })
-app.addHook('onListen', async () => {
+
+app.register(fastifyEnv, options)
+await app.after()
+const envs = app.getEnvs<Envs>()
+
+app.addHook('onReady', async () => {
   try {
     kafkaEventHandlerRegistry.registerHandler(new UserCreatedFromTgBotHandler())
     kafkaEventHandlerRegistry.registerHandler(new UserUpdatedFromTgBotHandler())
+    kafkaEventHandlerRegistry.registerHandler(new SendOtpToUserHandler())
 
     botService.start()
 
     await kafkaServie.connect()
     kafkaServie.consume(KafkaTopics.UserEvents)
+    kafkaServie.consume(KafkaTopics.AuthEvents)
   } catch (err) {
     app.log.error(err)
     process.exit(1)
   }
 })
-
-app.register(fastifyEnv, options)
-await app.after()
-const envs = app.getEnvs<Envs>()
 
 app.get('/ping', (req, reply) => {
   try {
