@@ -1,3 +1,4 @@
 export enum KafkaTopics {
-  UserEvents = 'user-events'
+  UserEvents = 'user-events',
+  AuthEvents = 'auth-events'
 }
