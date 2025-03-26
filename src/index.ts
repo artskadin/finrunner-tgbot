@@ -27,13 +27,14 @@ const envs = app.getEnvs<Envs>()
 
 app.addHook('onReady', async () => {
   try {
+    botService.start()
+
+    await kafkaServie.connect()
+
     kafkaEventHandlerRegistry.registerHandler(new UserCreatedFromTgBotHandler())
     kafkaEventHandlerRegistry.registerHandler(new UserUpdatedFromTgBotHandler())
     kafkaEventHandlerRegistry.registerHandler(new SendOtpToUserHandler())
 
-    botService.start()
-
-    await kafkaServie.connect()
     kafkaServie.consume(KafkaTopics.UserEvents)
     kafkaServie.consume(KafkaTopics.AuthEvents)
   } catch (err) {
