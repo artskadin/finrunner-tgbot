@@ -1,8 +1,8 @@
-import { Context } from 'grammy'
 import { kafkaServie } from '../services/kafka/kafka-service'
 import { KafkaTopics } from '../services/kafka/kafka-topics'
+import { BotContext } from '../services/bot-service'
 
-export async function startHandler(ctx: Context) {
+export async function startHandler(ctx: BotContext) {
   try {
     const tgUsername = ctx.from?.username
     const telegramId = ctx.from?.id

@@ -1,3 +1,7 @@
+import {
+  updateUsernameMessage,
+  welcomeMessage
+} from '../../messages/start-messages'
 import { getBotService } from '../bot-service'
 import {
   KafkaEvent,
@@ -23,8 +27,9 @@ export class UserCreatedFromTgBotHandler
       const botService = getBotService()
       const bot = botService.getBot()
 
-      //TODO поправить сообщение на человеческое
-      await bot.api.sendMessage(telegramId, 'USER_CREATED_FROM_TG_BOT_EVENT')
+      await bot.api.sendMessage(telegramId, welcomeMessage, {
+        parse_mode: 'Markdown'
+      })
     } catch (err) {
       throw err
     }
@@ -43,8 +48,9 @@ export class UserUpdatedFromTgBotHandler
       const botService = getBotService()
       const bot = botService.getBot()
 
-      //TODO поправить сообщение на человеческое
-      await bot.api.sendMessage(telegramId, 'USER_UPDATED_FROM_TG_BOT_EVENT')
+      await bot.api.sendMessage(telegramId, updateUsernameMessage, {
+        parse_mode: 'Markdown'
+      })
     } catch (err) {
       throw err
     }
@@ -63,7 +69,6 @@ export class SendOtpToUserHandler
       const botService = getBotService()
       const bot = botService.getBot()
 
-      // TODO вынести текста в отдельную сущность???
       const text = `Ваш код для входа на сайте: <code>${code}</code>`
 
       await bot.api.sendMessage(telegramId, text, { parse_mode: 'HTML' })
