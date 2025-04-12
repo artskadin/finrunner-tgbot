@@ -1,6 +1,5 @@
 import Fastify from 'fastify'
-import fastifyEnv from '@fastify/env'
-import { schema, Envs } from './envSettings'
+import { env } from './envSettings'
 import { startHandler } from './handlers/startHandler'
 import { kafkaServie } from './services/kafka/kafka-service'
 import { KafkaTopics } from './services/kafka/kafka-topics'
@@ -11,19 +10,15 @@ import {
   UserCreatedFromTgBotHandler,
   UserUpdatedFromTgBotHandler
 } from './services/kafka/events-handlers'
-
-const options = {
-  schema,
-  dotenv: true
-}
+import {
+  cancelFeedback,
+  feedbackHandler,
+  sendFeedbackHandler
+} from './handlers/feedbackHandlers'
 
 const app = Fastify({
   logger: true
 })
-
-app.register(fastifyEnv, options)
-await app.after()
-const envs = app.getEnvs<Envs>()
 
 app.addHook('onReady', async () => {
   try {
@@ -51,14 +46,18 @@ app.get('/ping', (req, reply) => {
   }
 })
 
-const botService = getBotService(envs['TELEGRAM_BOT_TOKEN'])
+const botService = getBotService(env.TELEGRAM_BOT_TOKEN)
 const bot = botService.getBot()
 
 bot.command('start', startHandler)
+bot.command('feedback', feedbackHandler)
+
+bot.command('cancel_feedback', cancelFeedback)
+bot.on('message:text', sendFeedbackHandler)
 
 const start = async () => {
   try {
-    const port = Number(envs['PORT'])
+    const port = Number(env.PORT)
     const address = await app.listen({ port, host: '0.0.0.0' })
 
     app.log.info(`FinRunner tg bot is running on ${address}`)

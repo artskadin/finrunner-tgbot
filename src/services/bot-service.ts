@@ -1,12 +1,29 @@
-import { Bot } from 'grammy'
+import { Bot, Context, session, SessionFlavor } from 'grammy'
+import { hydrateReply, parseMode, ParseModeFlavor } from '@grammyjs/parse-mode'
+
+interface SessionData {
+  isFeedbackMode: boolean
+}
+
+export type BotContext = ParseModeFlavor<Context> & SessionFlavor<SessionData>
 
 class BotService {
   private static instance: BotService | null = null
-  private bot: Bot
+  private bot: Bot<BotContext>
 
   constructor(token: string) {
-    this.bot = new Bot(token!)
+    this.bot = new Bot<BotContext>(token!)
+
+    this.bot.use(session({ initial: this.initialSession }))
+    this.bot.use(hydrateReply)
+    // this.bot.api.config.use(parseMode('MarkdownV2'))
     console.log('Telegram bot was initialized')
+  }
+
+  private initialSession(): SessionData {
+    return {
+      isFeedbackMode: false
+    }
   }
 
   public static getInstance(token?: string): BotService {
@@ -20,7 +37,7 @@ class BotService {
     return BotService.instance
   }
 
-  getBot(): Bot {
+  getBot(): Bot<BotContext> {
     return this.bot
   }
 
