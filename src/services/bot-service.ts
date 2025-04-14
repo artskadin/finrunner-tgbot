@@ -1,4 +1,11 @@
-import { Bot, Context, session, SessionFlavor } from 'grammy'
+import {
+  Bot,
+  Context,
+  GrammyError,
+  HttpError,
+  session,
+  SessionFlavor
+} from 'grammy'
 import { hydrateReply, parseMode, ParseModeFlavor } from '@grammyjs/parse-mode'
 
 interface SessionData {
@@ -12,7 +19,7 @@ class BotService {
   private bot: Bot<BotContext>
 
   constructor(token: string) {
-    this.bot = new Bot<BotContext>(token!)
+    this.bot = new Bot<BotContext>(token)
 
     this.bot.use(session({ initial: this.initialSession }))
     this.bot.use(hydrateReply)
@@ -43,6 +50,21 @@ class BotService {
 
   start(): void {
     this.bot.start()
+  }
+
+  catch(): void {
+    this.bot.catch((err) => {
+      const ctx = err.ctx
+      console.error(`Error while handling update ${ctx.update.update_id}:`)
+      const e = err.error
+      if (e instanceof GrammyError) {
+        console.error('Error in request:', e.description)
+      } else if (e instanceof HttpError) {
+        console.error('Could not contact Telegram:', e)
+      } else {
+        console.error('Unknown error:', e)
+      }
+    })
   }
 
   stop(): void {
