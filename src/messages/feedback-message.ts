@@ -11,5 +11,5 @@ export function prepareFeedbackMessage({
 }) {
   const title = `Сообщение от пользователя @${fromUsername} id:[\`${fromId}\`]`
 
-  return `${title} \n\n ${escapeMarkdownV2(message)}`
+  return `${escapeMarkdownV2(title)} \n\n ${escapeMarkdownV2(message)}`
 }

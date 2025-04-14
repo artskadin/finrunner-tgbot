@@ -16,6 +16,7 @@
   "devDependencies": {
     "@grammyjs/parse-mode": "^1.11.1",
     "@types/node": "^22.13.5",
+    "dotenv": "^16.5.0",
     "envalid": "^8.0.0",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"

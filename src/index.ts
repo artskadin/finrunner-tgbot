@@ -1,5 +1,4 @@
 import Fastify from 'fastify'
-import { env } from './envSettings'
 import { startHandler } from './handlers/startHandler'
 import { kafkaServie } from './services/kafka/kafka-service'
 import { KafkaTopics } from './services/kafka/kafka-topics'
@@ -15,6 +14,7 @@ import {
   feedbackHandler,
   sendFeedbackHandler
 } from './handlers/feedbackHandlers'
+import { env } from './envSettings'
 
 const app = Fastify({
   logger: true
